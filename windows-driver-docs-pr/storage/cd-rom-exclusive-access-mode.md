@@ -44,7 +44,7 @@ Exclusive access mode has the following characteristics:
 
 -   The system fails requests for access from other applications.
 
--   The system processes Plug and Play (PnP) and power I/O request packets (IRPs) in the typical way.
+-   The system processes Plug and Play (PnP) and power I/O request packets (IRPs) in a typical way.
 
 -   Media change notification is disabled for the device.
 
@@ -69,11 +69,3 @@ After removing the exclusive access lock on a device, the CD-ROM class driver ta
 -   Sets the DO\_VERIFY\_VOLUME flag in the device extension, so that the system will remount the device's file system.
 
 -   Forces an update of the device's multimedia capabilities.
-
- 
-
- 
-
-
-
-
