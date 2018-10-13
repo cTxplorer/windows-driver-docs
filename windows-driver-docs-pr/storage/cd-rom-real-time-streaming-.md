@@ -32,7 +32,7 @@ In addition, for kernel-mode components, there are changes in the way Cdrom.sys 
 
 These changes in the storage driver stack allow higher layers (in particular, file system drivers and applications) to perform read/write operations at a guaranteed speed for files containing real-time data. Starting in Windows 7, you can mark a file for real-time streaming by using the [**FSCTL\_MARK\_HANDLE**](https://msdn.microsoft.com/library/windows/desktop/aa364576) Control Code and specifying the streaming mode by setting **MARK\_HANDLE\_REALTIME** flag in the [**MARK\_HANDLE\_INFO**](https://msdn.microsoft.com/library/windows/desktop/aa365229) structure.
 
-Figure 1 illustrates the relationship between regular and streaming read and write requests and the UDF file system and CDROM class drivers.
+Figure 1 illustrates the relationship between regular and streaming read/write requests and the UDF file system and CDROM class drivers.
 
 ![figure 1: real-time streaming support in cdrom.sys and udfs.sys](images/cdromstreaming.png)
 
@@ -46,7 +46,7 @@ DVD playback applications and file system drivers have a choice of using IOCTLs 
 ## <span id="Enabling_or_disabling_real-time_streaming_using_IOCTLs"></span><span id="enabling_or_disabling_real-time_streaming_using_ioctls"></span><span id="ENABLING_OR_DISABLING_REAL-TIME_STREAMING_USING_IOCTLS"></span>Enabling or disabling real-time streaming using IOCTLs
 
 
--   Use the [**IOCTL\_CDROM\_ENABLE\_STREAMING**](https://msdn.microsoft.com/library/windows/hardware/gg441241) I/O control code to enable or disable streaming mode for raw read and write requests. This IOCTL does not have output parameter and supports the [**CDROM\_STREAMING\_CONTROL**](https://msdn.microsoft.com/library/windows/hardware/gg441238) structure as the input parameter.
+-   Use the [**IOCTL\_CDROM\_ENABLE\_STREAMING**](https://msdn.microsoft.com/library/windows/hardware/gg441241) I/O control code to enable or disable streaming mode for raw read and write requests. This IOCTL does not have an output parameter and supports the [**CDROM\_STREAMING\_CONTROL**](https://msdn.microsoft.com/library/windows/hardware/gg441238) structure as the input parameter.
 
     This IOCTL enables or disables streaming mode on a per-handle basis. By default, streaming is disabled for all newly opened raw CDROM handles. A playback application that does not want to use file system and prefers to work with raw data should open two file handles for the same device: a regular one for file system metadata and a streaming one for real-time files.
 
@@ -60,17 +60,17 @@ DVD playback applications and file system drivers have a choice of using IOCTLs 
 
 -   You can mark any file for real-time read behavior, regardless of the file type. To do this, set the **MARK\_HANDLE\_REALTIME** flag in the [**MARK\_HANDLE\_INFO**](https://msdn.microsoft.com/library/windows/desktop/aa365229) structure, and then send the [**FSCTL\_MARK\_HANDLE**](https://msdn.microsoft.com/library/windows/desktop/aa364576) control code. Files marked with this flag must be opened for unbuffered I/O.
 -   An application can unmark a file that was previously flagged for real-time behavior, by setting the **MARK\_HANDLE\_NOT\_REALTIME** flag in the MARK\_HANDLE\_INFO structure.
--   If FSCTL\_MARK\_HANDLE control code is sent with MARK\_HANDLE\_REALTIME and either the CD-ROM/DVD drive or media indicate that the real time streaming feature is not supported, IOCTL returns STATUS\_INVALID\_DEVICE\_REQUEST. If the handle is opened without buffering, the STATUS\_INVALID\_DEVICE\_REQUEST is also returned.
+-   If FSCTL\_MARK\_HANDLE control code is sent with MARK\_HANDLE\_REALTIME and either the CD-ROM/DVD drive or media indicate that the real-time streaming feature is not supported, IOCTL returns STATUS\_INVALID\_DEVICE\_REQUEST. If the handle is opened without buffering, the STATUS\_INVALID\_DEVICE\_REQUEST is also returned.
 
 ## <span id="Performing_Optimum_Power_Calibration__OPC__before_writing"></span><span id="performing_optimum_power_calibration__opc__before_writing"></span><span id="PERFORMING_OPTIMUM_POWER_CALIBRATION__OPC__BEFORE_WRITING"></span>Performing Optimum Power Calibration (OPC) before writing
 
 
-Some applications might want to perform the OPC procedure in advance, so that the first streaming write does not have to wait for the OPC to finish. To do this, Cdrom.sys provides an IOCTL called [**IOCTL\_CDROM\_SEND\_OPC\_INFORMATION**](https://msdn.microsoft.com/library/windows/hardware/gg441243).
+Some applications might want to perform the OPC procedure in advance so that the first streaming write does not have to wait for the OPC to finish. To do this, Cdrom.sys provides an IOCTL called [**IOCTL\_CDROM\_SEND\_OPC\_INFORMATION**](https://msdn.microsoft.com/library/windows/hardware/gg441243).
 
 ## <span id="Determining_the_read_write_speed_for_the_drive"></span><span id="determining_the_read_write_speed_for_the_drive"></span><span id="DETERMINING_THE_READ_WRITE_SPEED_FOR_THE_DRIVE"></span>Determining the read/write speed for the drive
 
 
-The MMC specification recommends that applications indicate the desirable read and write speed before using streaming I/O, so that the drive can find a better balance between read and write quality and throughput. Applications can use the [**IOCTL\_CDROM\_SET\_SPEED**](https://msdn.microsoft.com/library/windows/hardware/ff559381) to indicate the preferred speed. To determine the supported capabilities of the drive, Windows 7 introduced the [**IOCTL\_CDROM\_GET\_PERFORMANCE**](https://msdn.microsoft.com/library/windows/hardware/gg441242) control code, which takes as an input a [**CDROM\_PERFORMANCE\_REQUEST**](https://msdn.microsoft.com/library/windows/hardware/gg441233) structure.
+The MMC specification recommends that applications indicate the desirable read and write speed before using streaming I/O so that the drive can find a better balance between read and write quality and throughput. Applications can use the [**IOCTL\_CDROM\_SET\_SPEED**](https://msdn.microsoft.com/library/windows/hardware/ff559381) to indicate the preferred speed. To determine the supported capabilities of the drive, Windows 7 introduced the [**IOCTL\_CDROM\_GET\_PERFORMANCE**](https://msdn.microsoft.com/library/windows/hardware/gg441242) control code, which takes as an input a [**CDROM\_PERFORMANCE\_REQUEST**](https://msdn.microsoft.com/library/windows/hardware/gg441233) structure.
 
 ## <span id="related_topics"></span>Related topics
 [**IOCTL\_CDROM\_ENABLE\_STREAMING**](https://msdn.microsoft.com/library/windows/hardware/gg441241)  
